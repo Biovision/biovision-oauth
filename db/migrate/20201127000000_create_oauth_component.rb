@@ -2,26 +2,9 @@
 
 # Create tables for Users component
 class CreateOauthComponent < ActiveRecord::Migration[6.0]
-  def up
-    create_component
-    create_foreign_sites unless ForeignSite.table_exists?
-    create_foreign_users unless ForeignUser.table_exists?
-  end
-
-  def down
-    [ForeignUser, ForeignSite].each do |model|
-      drop_table model.table_name if model.table_exists?
-    end
-
-    BiovisionComponent[Biovision::Components::OauthComponent.slug]&.destroy
-  end
+  include Biovision::Migrations::ComponentMigration
 
   private
-
-  def create_component
-    slug = Biovision::Components::OauthComponent.slug
-    BiovisionComponent.create(slug: slug)
-  end
 
   def create_foreign_sites
     create_table :foreign_sites, comment: 'Sites for external authentication' do |t|
